@@ -9,12 +9,13 @@
             </RouterLink>
         </div>
         <div class="input-container">
-            <input type="text" value="검색" style="justify-content: right;">
+            <input type="text" style="text-align: right;" @click="clearInput" v-model="inputText">
         </div>
     </div>
     <Transition>
       <div v-show="isVisible">
     <div class="container">
+      <div v-if="filteredDeposits.length > 0">
         <table class="table">
         <thead>
           <tr>
@@ -28,7 +29,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="store.deposits" v-for="deposit in store.deposits" :key="deposit.fin_prdt_cd">
+          <tr v-for="deposit in filteredDeposits" :key="deposit.fin_prdt_cd" @click="clickfunction(deposit.fin_prdt_cd)">
             <td>{{ currentTime }}</td>
             <td>{{ deposit.kor_co_nm }}</td>
             <td>{{ deposit.fin_prdt_nm }}</td>
@@ -40,7 +41,34 @@
         </tbody>
       </table>
     </div>
+      <div v-else>
+        <table class="table">
+        <thead>
+          <tr>
+            <th>공시 날짜</th>
+            <th>회사 이름</th>
+            <th>상품 이름</th>
+            <th>6개월</th>
+            <th>12개월</th>
+            <th>18개월</th>
+            <th>24개월</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="deposit in store.deposits" :key="deposit.fin_prdt_cd" @click="clickfunction(deposit.fin_prdt_cd)">
+            <td>{{ currentTime }}</td>
+            <td>{{ deposit.kor_co_nm }}</td>
+            <td>{{ deposit.fin_prdt_nm }}</td>
+            <td>{{groupDeposits[deposit.fin_prdt_cd][0]}}</td>
+            <td>{{groupDeposits[deposit.fin_prdt_cd][1]}}</td>
+            <td>{{groupDeposits[deposit.fin_prdt_cd][2]}}</td>
+            <td>{{groupDeposits[deposit.fin_prdt_cd][3]}}</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
+    </div>
+    </div>
     </Transition>
   </template>
 
@@ -49,13 +77,27 @@ import dayjs from "dayjs";
 import { ref,  computed } from 'vue'
 import { useCounterStore } from '@/stores/counter'
 import { onMounted } from 'vue';
-import { RouterLink, RouterView } from "vue-router";
-
-
-const isVisible = ref(false)
-const currentTime = ref(dayjs().format('YYYYMMDD')) // 현재날짜 + 시각
+import { RouterLink, useRouter } from "vue-router";
 
 const store = useCounterStore()
+const isVisible = ref(false)
+const currentTime = ref(dayjs().format('YYYYMMDD')) // 현재날짜 + 시각
+const inputText = ref('검색')
+const router = useRouter()
+
+const clickfunction = function (key) {
+  router.push({name:'Bank', params:{'id':key}})
+}
+
+const clearInput = function() {
+  inputText.value = ''
+}
+
+const filteredDeposits = computed(() => {
+  const searchText = inputText.value.toLowerCase()
+  return store.deposits.filter(deposit => deposit.kor_co_nm.toLowerCase().includes(searchText))
+})
+
 onMounted(() => {
   store.DepositSaving()
   store.DepositOptions()
@@ -107,7 +149,7 @@ border:1px solid rgba(0,0,0,0.8);
 
 /* 상단 탭 / 버튼 스타일 */
 .topcontainer {
-    width:70%;
+    width:80%;
     margin: 0 auto;
     display: flex;
 }

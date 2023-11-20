@@ -1,7 +1,7 @@
 <template>
     <transition>
         <div class="top" v-show="isVisible">
-            <form @submit.prevent = "exchangeCreate" class="bottom">
+            <form class="bottom">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="box-fix">
                         {{ coun1 }}
@@ -14,7 +14,7 @@
                         <li><a class="dropdown-item" @click="setpk('coun1', 4, '1')">원화</a></li>
                     </ul>
                 </div>
-                <input v-model="much1" @keyup.enter="submit" id="leftdropdown">
+                    <input type="number" v-model="much1" @input="exchangeCreate" id="leftdropdown">
             </form>
             <div>
                 <img src="@/assets/1194036.png" class="firstimg">
@@ -33,10 +33,9 @@
                     </ul>
                 </div>
                 <div id="upbox">
-                    <p id="leftdropdown" style="padding:5px" v-if="result">{{ Number(result.price).toLocaleString() }}</p>
+                    <p id="leftdropdown" style="padding:5px" v-if="result">{{ (result.price).toLocaleString() }}</p>
                 </div>
             </form>
-            <button type="button" class="btn btn-primary" id="primary" @click="exchangeCreate">검색</button>
         </div>
     </transition>
     

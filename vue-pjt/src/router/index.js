@@ -10,6 +10,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import LogOutView from '@/views/LogOutView.vue'
 import DepositView from '@/views/DepositView.vue'
 import SavingView from '@/views/SavingView.vue'
+import BankDetailView from '@/views/BankDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/Saving',
       name : 'Saving',
       component: SavingView
+    },
+    {
+      path: '/Bank/:id',
+      name: 'Bank',
+      component: BankDetailView
     }
   ]
 })

@@ -9,12 +9,13 @@
             </RouterLink>
         </div>
         <div class="input-container">
-            <input type="text" value="검색" style="justify-content: right;">
+            <input type="text" style="text-align: right;" @click="clearInput" v-model="inputText">
         </div>
     </div>
     <Transition>
       <div v-show="isVisible">
     <div class="container">
+      <div v-if="filteredSavings.length > 0">
         <table class="table">
         <thead>
           <tr>
@@ -28,17 +29,44 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="store.savings" v-for="saving in store.savings" :key="saving.fin_prdt_cd">
-            <td>{{ currentTime }}</td>
-            <td>{{ saving.kor_co_nm }}</td>
-            <td>{{ saving.fin_prdt_nm }}</td>
-            <td>{{groupSavings[saving.fin_prdt_cd][0]}}</td>
-            <td>{{groupSavings[saving.fin_prdt_cd][1]}}</td>
-            <td>{{groupSavings[saving.fin_prdt_cd][2]}}</td>
-            <td>{{groupSavings[saving.fin_prdt_cd][3]}}</td>
-          </tr>
-        </tbody>
+          <tr v-for="saving in filteredSavings" :key="saving.fin_prdt_cd">
+              <td>{{ currentTime }}</td>
+              <td>{{ saving.kor_co_nm }}</td>
+              <td>{{ saving.fin_prdt_nm }}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][0]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][1]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][2]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][3]}}</td>
+            </tr>
+          </tbody>
       </table>
+      </div>
+      <div v-else>
+        <table class="table">
+        <thead>
+          <tr>
+            <th>공시 날짜</th>
+            <th>회사 이름</th>
+            <th>상품 이름</th>
+            <th>6개월</th>
+            <th>12개월</th>
+            <th>18개월</th>
+            <th>24개월</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="saving in store.savings" :key="saving.fin_prdt_cd">
+              <td>{{ currentTime }}</td>
+              <td>{{ saving.kor_co_nm }}</td>
+              <td>{{ saving.fin_prdt_nm }}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][0]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][1]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][2]}}</td>
+              <td>{{groupSavings[saving.fin_prdt_cd][3]}}</td>
+            </tr>
+          </tbody>
+      </table>
+      </div>
     </div>
       </div>
     </Transition>
@@ -46,7 +74,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { ref,  computed } from 'vue'
+import { ref,  computed, Fragment } from 'vue'
 import { useCounterStore } from '@/stores/counter'
 import { RouterLink } from "vue-router";
 import { onMounted } from 'vue';
@@ -54,10 +82,17 @@ import { onMounted } from 'vue';
 
 const isVisible = ref(false)
 const currentTime = ref(dayjs().format('YYYYMMDD')) // 현재날짜 + 시각
-const searchbox = ref(null)
-
-
+const inputText = ref('검색')
 const store = useCounterStore()
+const clearInput = function() {
+  inputText.value = ''
+}
+
+const filteredSavings = computed(() => {
+  const searchText = inputText.value.toLowerCase()
+  return store.savings.filter(saving => saving.kor_co_nm.toLowerCase().includes(searchText))
+})
+
 onMounted(() => {
   store.Saving()
   store.SavingOption()
@@ -90,7 +125,7 @@ setTimeout(() => {
 /* 전체 레이아웃에 대한 스타일 */
 
 .topcontainer {
-    width:70%;
+    width:80%;
     margin: 0 auto;
     display: flex;
 }
