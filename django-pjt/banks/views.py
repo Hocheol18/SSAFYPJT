@@ -46,7 +46,7 @@ def deposit(request):
 
     return Response(serializer.data)
 
-def saving(request):
+def savings(request):
     res = requests.get('https://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth=72624f4493711e1a4b021f735bffa37e&topFinGrpNo=020000&pageNo=1')
     baselist = res.json()['result']['bas    eList']
     optionlist = res.json()['result']['optionList']
